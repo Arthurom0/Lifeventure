@@ -4,6 +4,11 @@ import time
 import pygame
 from os import listdir
 from constants import *
+from utils import load_animation_images
+from Personnage import Personnage
+from Background import Background
+from Mechant import Mechant
+from Jeu import Jeu
 
 pygame.init()
 jumping = False
@@ -34,20 +39,6 @@ if DO_PLAY_SOUND:
 #Temps
 clock = pygame.time.Clock()
 
-def load_img(path, size):
-    """Charge une image et ajuste sa taille"""
-
-
-    # Chargement de l'image
-    img = pygame.image.load(path)
-    
-
-    # smoothscale() nécessite une image en 24-bits ou 32-bits
-    if img.get_bitsize() in (24, 32):
-        return pygame.transform.smoothscale(img, size)
-    return pygame.transform.scale(img, size)
-
-
 #importer l'arrière plan
 arriereplan = pygame.image.load(IMAGE_FOND)
 
@@ -66,110 +57,7 @@ y_background = 0
 
 # pygame.Rect(0, 0, 1920, 1080)
 
-#classe qui représente le personnage
-class Personnage(pygame.sprite.Sprite):
 
-    def __init__(self):
-        super().__init__()
-        #self.health = 100
-        #self.max_health = 100
-        #self.attack = 10
-        self.velocity_x = 9
-        self.velocity_y = 4 
-        self.gravity = 1
-        #self.velocity_z = 4
-        self.image = pygame.image.load(ANIM_JEUNE)
-        self.rect = self.image.get_rect()
-        self.on_ground = True
-        self.rect.x = 999
-        self.rect.y = 666
-        #self.rect.z = 1
-        self.current_image = 0
-        self.animation = True
-        self.images = {
-            "marche_droite" : load_animation_images(DOSSIER_ANIM_JEUNE, "MarcheJeuneD", (23 *taille, 32*taille)), 
-            "idle" : load_animation_images(DOSSIER_ANIM_JEUNE, "JeuneIdle", (23 *taille, 32 *taille)),
-            'marche_gauche' : load_animation_images(DOSSIER_ANIM_JEUNE, "MarcheJeuneG", (23 *taille, 32 *taille)),
-            "saut" : load_animation_images(DOSSIER_ANIM_JEUNE, "SautJeune", (32 *taille, 32 *taille)),
-        } 
-        self.actuel = "idle" 
-
-    # Afficher les animations (frames)        
-    def display(self):
-        self.current_image = self.current_image %len(self.images[self.actuel])
-        ecran.blit(self.images[self.actuel][int(self.current_image)], self.rect)
-        self.current_image += delta_t / 200
-
-    def idle(self):
-        self.actuel = "idle"
-
-    def move_right(self):
-        self.actuel = "marche_droite"
-        self.rect.x += self.velocity_x
-        
-    def move_left(self):
-        self.actuel = "marche_gauche"
-        self.rect.x -= self.velocity_x
-
-    def jump(self):
-  
-        if self.on_ground:
-            self.actuel = "saut"
-            self.velocity_y = -10
-            self.rect.y += self.velocity_y
-            self.on_ground = False
-       
-        if self.on_ground == False :
-            self.velocity_y += 0.5
-            self.rect.y += self.velocity_y
-        
-            if self.rect.y > 666:        
-                self.rect.y = 666
-                self.velocity_y = 1
-                self.on_ground = True
-
-class Mechant(pygame.sprite.Sprite):
-    def __init__(self, position):
-        super().__init__()
-        self.image = pygame.image.load(ENNEMI_CACTUS)
-        self.rect = self.image.get_rect()
-        self.rect.x = position[0]
-        self.rect.y = position[1]
-        self.current_image = 0
-        self.animation = True
-        self.actuel = "idle_ennemi1" 
-        self.images = {
-            "idle_ennemi1" : load_animation_images(DOSSIER_ENNEMI, "Cactus", (32 *taille, 32 *taille)), 
-        } 
-
-    def display(self):
-        self.current_image = self.current_image %len(self.images[self.actuel])
-        ecran.blit(self.images[self.actuel][int(self.current_image)], self.rect)
-        self.current_image += delta_t / 200
-    
-    def update(self, shift):
-        self.rect.x += shift
-
-#Class du background 
-class Background(pygame.sprite.Sprite):                         #Le fond qui est en mouvemet
-    def __init__(self, position):
-        super().__init__()
-        self.image = pygame.image.load(IMAGE_FOND)
-        self.rect = self.image.get_rect()
-        self.rect.x = position[0]
-        self.rect.y = position[1]
-        
-    def display(self):
-        ecran.blit(self.image, self.rect)
-
-    def update(self, shift):
-        self.rect.x += shift
-
-
-def load_animation_images(path, name, size):
-
-    # On cherche tous les images dans les dossiers avec le nom et on charge avec une certaine taille 
-    return [load_img(path + "/" + file, size) for file in listdir(path) if file.startswith(name)]
     
 #Dictionnaire
 animation = {
@@ -177,19 +65,14 @@ animation = {
     "mechant" : load_animation_images(DOSSIER_ENNEMI, "Cactus", (32, 32)),
 } 
 
-#classe qui représente le jeu
-class Jeu: 
-    def __init__(self):
-        #générer le perso
-        self.pressed = {}
 
 
 #charger le personnage
-player = Personnage()
+player = Personnage(ecran)
 #liste_mechant = [Mechant((200, 666))]
-cactus = Mechant((750, 666))
+cactus = Mechant(ecran, (750, 666))
 
-back = Background((0, 0))
+back = Background(ecran, (0, 0))
 #charger le jeu
 game = Jeu()
 
