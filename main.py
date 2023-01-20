@@ -88,8 +88,9 @@ while running:
     # mettre à jour l'écran
     pygame.display.flip()
     
-    print(player.rect.x, player.rect.y)
     #ecran.blit(arriereplan, (x_fond - (player.rect.x +shift)//3 , y_fond ))
+
+
 
     #Limite de la fenetre 
     if player.rect.x < width/3 and back.rect.x != 0:
@@ -100,9 +101,10 @@ while running:
         shift = -9 
     else:
         shift = 0
-    print(back.rect.x)
+
     cactus.update(shift)
     back.update(shift)
+    player.update()
 
     ecran.blit(arriereplan, (x_fond, y_fond ))    
                         

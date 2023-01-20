@@ -12,8 +12,12 @@ class Personnage(pygame.sprite.Sprite):
         #self.health = 100
         #self.max_health = 100
         #self.attack = 10
+        
         self.velocity_x = 9
         self.velocity_y = 4 
+        self.vitesse_x = 0
+        self.vitesse_y = 0
+
         self.gravity = 1
         #self.velocity_z = 4
         self.image = pygame.image.load(ANIM_JEUNE)
@@ -49,19 +53,16 @@ class Personnage(pygame.sprite.Sprite):
         self.actuel = "marche_gauche"
         self.rect.x -= self.velocity_x
 
-    def jump(self):
-  
-        if self.on_ground:
-            self.actuel = "saut"
-            self.velocity_y = -10
-            self.rect.y += self.velocity_y
-            self.on_ground = False
-       
-        if self.on_ground == False :
-            self.velocity_y += 0.5
-            self.rect.y += self.velocity_y
+    def update(self):
         
-            if self.rect.y > 666:        
-                self.rect.y = 666
-                self.velocity_y = 1
-                self.on_ground = True
+        self.rect.y += self.vitesse_y
+        self.vitesse_y += 0.5
+
+        if self.rect.y >= 666:
+            self.vitesse_y = 0
+
+        print(self.rect.x, self.rect.y)
+
+    def jump(self):
+        if self.vitesse_y == 0:
+            self.vitesse_y = -10
