@@ -1,5 +1,8 @@
 BASE_DOSSIER = "res/"
-IMAGE_FOND = BASE_DOSSIER + "decors/Paysage3.png"
+IMAGES_FOND = [
+    BASE_DOSSIER + "decors/Paysage3.png",
+    BASE_DOSSIER + "decors/Map_Temple.png",
+]
 MUSIQUE_FOND = BASE_DOSSIER + "musiques/musique.mp3"
 DOSSIER_ANIM_JEUNE = BASE_DOSSIER + "anim_players/jeune/"
 ANIM_JEUNE = DOSSIER_ANIM_JEUNE + "Jeune.png"

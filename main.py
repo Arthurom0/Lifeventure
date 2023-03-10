@@ -11,6 +11,8 @@ from Mechant import Mechant
 from Jeu import Jeu
 
 pygame.init()
+pygame.font.init() 
+
 jumping = False
 Y_gravity = 1
 JUMP_HEIGHT = 20
@@ -22,6 +24,8 @@ pygame.display.set_caption("Lifenture")
 infoObject = pygame.display.Info()
 width, height = infoObject.current_w, infoObject.current_h
 ecran = pygame.display.set_mode((width, height))
+my_font = pygame.font.SysFont('Comic Sans MS', 30)
+
 x_fond = 0
 y_fond = 0
 width_max = 1920
@@ -39,48 +43,38 @@ if DO_PLAY_SOUND:
 #Temps
 clock = pygame.time.Clock()
 
-#importer l'arrière plan
-arriereplan = pygame.image.load(IMAGE_FOND)
-
-#mouvement du fond
-screen_scrolling = 0
-
-#valeur y du background
-y_background = 0
-
-#  # On récupère ses dimensions
-# dimension_fondx = arriereplan.get_width()
-# dimension_fondy = arriereplan.get_height()
-
-# print(dimension_fondx)
-# print(dimension_fondy)
-
-# pygame.Rect(0, 0, 1920, 1080)
-
-
-    
 #Dictionnaire
 animation = {
     "marche" : load_animation_images(DOSSIER_ANIM_JEUNE, "MarcheJeune", (32, 32)),
     "mechant" : load_animation_images(DOSSIER_ENNEMI, "Cactus", (32, 32)),
 } 
 
-
-
 #charger le personnage
 player = Personnage(ecran)
-#liste_mechant = [Mechant((200, 666))]
 cactus = Mechant(ecran, (750, 666))
+back = Background(ecran)
 
-back = Background(ecran, (0, 0))
 #charger le jeu
 game = Jeu()
+
+# qui permet de savoir sur quelle map on est
+current_map_id = 0
 
 # liste qui va conteir les truc a afficher (fond, mobs, joueur, items...)
 entities = [back, player, cactus]
 
 # placement de la caméra qu'on peut déplacer indépendamenr du joueur
 camera_offset = [0, 0]
+
+def set_nd_map():
+    global current_map_id
+    camera_offset[0] = 0
+    camera_offset[1] = 0
+    current_map_id = 1
+    player.rect.x = 0
+    player.rect.y = 900
+    back.setImage(1)
+    
 
 # tant que le jeu est en marche...
 running = True
@@ -123,14 +117,25 @@ while running:
 
     # on déplace la caméra sur le joueur
     camera_offset[0] = -(player.rect.x - width_max//2)
-    
+  
 
     #Montrer le personnage et mechant
     for entity in entities:
         entity.display(camera_offset)  
+  
+    # afficher les coordonnées (x;y du joueur)
+    text_surface = my_font.render(f"x={player.rect.x}, y={player.rect.y}", False, (0, 0, 0))
+    ecran.blit(text_surface, (0, 0))
+
+    # si la map est 1 et que le joueur est a droite
+    if current_map_id == 0 and player.rect.x >= 2710 and player.rect.x <= 2770 :
+        text_surface = my_font.render(f"Press down to enter", False, (0, 0, 0))
+        ecran.blit(text_surface, (player.rect.x + camera_offset[0] - 100, 600))
+        if game.pressed.get(pygame.K_RETURN):
+            set_nd_map()
 
     if game.pressed.get(pygame.K_ESCAPE):
-        pygame.quit
+        pygame.quit()
     
         
    
