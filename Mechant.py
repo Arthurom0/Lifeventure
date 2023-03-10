@@ -18,10 +18,14 @@ class Mechant(pygame.sprite.Sprite):
             "idle_ennemi1" : load_animation_images(DOSSIER_ENNEMI, "Cactus", (32 * 2, 32 * 2)), 
         } 
 
-    def display(self):
-        self.current_image = self.current_image %len(self.images[self.actuel])
-        self.ecran.blit(self.images[self.actuel][int(self.current_image)], self.rect)
-        self.current_image += self.tick / 200
+    def display(self, camera_offset):
+        self.current_image = self.current_image % len(self.images[self.actuel])
+
+        pixel_x = self.rect.x + camera_offset[0]
+        pixel_y = self.rect.y + camera_offset[1]
+
+        self.ecran.blit(self.images[self.actuel][int(self.current_image)], (pixel_x, pixel_y))
+        self.current_image += 1
     
-    def update(self, shift):
-        self.rect.x += shift
+    def update(self):
+        pass

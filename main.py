@@ -33,7 +33,7 @@ taille = 2
 DO_PLAY_SOUND = False
 if DO_PLAY_SOUND:
     pygame.mixer.music.load(MUSIQUE_FOND)
-    pygame.mixer.music.set_volume(0.7)
+    pygame.mixer.music.set_volume(0.1)
     pygame.mixer.music.play()
     
 #Temps
@@ -76,70 +76,63 @@ back = Background(ecran, (0, 0))
 #charger le jeu
 game = Jeu()
 
-shift = 0
+# liste qui va conteir les truc a afficher (fond, mobs, joueur, items...)
+entities = [back, player, cactus]
+
+# placement de la caméra qu'on peut déplacer indépendamenr du joueur
+camera_offset = [0, 0]
 
 # tant que le jeu est en marche...
 running = True
 while running:
 
     #delta temps
-    delta_t = clock.tick()
+    delta_t = clock.tick(60)
 
     # mettre à jour l'écran
     pygame.display.flip()
-    
-    #ecran.blit(arriereplan, (x_fond - (player.rect.x +shift)//3 , y_fond ))
 
-
-
-    #Limite de la fenetre 
-    if player.rect.x < width/3 and back.rect.x != 0:
-        player.rect.x = width/3
-        shift = 9
-    elif player.rect.x > (width/3) *2 and back.rect.x > -1950:
-        player.rect.x = (width/3) *2
-        shift = -9 
-    else:
-        shift = 0
-
-    cactus.update(shift)
-    back.update(shift)
-    player.update()
-
-    ecran.blit(arriereplan, (x_fond, y_fond ))    
-                        
-    #Montrer le personnage et mechant
-    back.display()
-    player.display()    
-    cactus.display()
-
-    # déplacement du personnage et mechant
-    if game.pressed.get(pygame.K_RIGHT):
-        player.move_right()
-    
-    elif game.pressed.get(pygame.K_LEFT):
-        player.move_left()
-    elif game.pressed.get(pygame.K_UP): 
-        player.jump()
-    else: 
-        player.idle()   
-
-         
-    if game.pressed.get(pygame.K_TAB):
-        pygame.quit
-    
-        
     #fermeture de la fenêtre
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
             pygame.quit()
             print("Fermeture du jeu")
-            
-        # deplacement du personnage
+
+        # defini si la touche est appuyée ou non (a faire avant de detecter les touches)
         elif event.type == pygame.KEYDOWN:
             game.pressed[event.key] = True
         elif event.type == pygame.KEYUP:
-            game.pressed[event.key] =False
+            game.pressed[event.key] = False
+ 
+
+    for entity in entities:
+        entity.update()
+
+    # déplacement du personnage et mechant
+    player.idle()  
+    
+    if game.pressed.get(pygame.K_RIGHT):
+        player.move_right([back.image.get_width(), back.image.get_height()])
+    elif game.pressed.get(pygame.K_LEFT):
+        player.move_left([back.image.get_width(), back.image.get_height()])
+
+    if game.pressed.get(pygame.K_UP): 
+        player.jump()
+
+
+    # on déplace la caméra sur le joueur
+    camera_offset[0] = -(player.rect.x - width_max//2)
+    
+
+    #Montrer le personnage et mechant
+    for entity in entities:
+        entity.display(camera_offset)  
+
+    if game.pressed.get(pygame.K_ESCAPE):
+        pygame.quit
+    
+        
+   
 
     

@@ -11,8 +11,10 @@ class Background(pygame.sprite.Sprite):                         #Le fond qui est
         self.rect.x = position[0]
         self.rect.y = position[1]
         
-    def display(self):
-        self.ecran.blit(self.image, self.rect)
+    def display(self, camera_offset):
+        pixel_x = self.rect.x + camera_offset[0]
+        pixel_y = self.rect.y + camera_offset[1]
+        self.ecran.blit(self.image, (pixel_x, pixel_y))
 
-    def update(self, shift):
-        self.rect.x += shift
+    def update(self):
+        next

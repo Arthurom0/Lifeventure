@@ -13,8 +13,8 @@ class Personnage(pygame.sprite.Sprite):
         #self.max_health = 100
         #self.attack = 10
         
-        self.velocity_x = 9
-        self.velocity_y = 4 
+        self.velocity_x = 13
+        self.velocity_y = 5
         self.vitesse_x = 0
         self.vitesse_y = 0
 
@@ -25,7 +25,6 @@ class Personnage(pygame.sprite.Sprite):
         self.on_ground = True
         self.rect.x = 999
         self.rect.y = 666
-        #self.rect.z = 1
         self.current_image = 0
         self.animation = True
         self.images = {
@@ -37,32 +36,49 @@ class Personnage(pygame.sprite.Sprite):
         self.actuel = "idle" 
 
     # Afficher les animations (frames)        
-    def display(self):
-        self.current_image = self.current_image %len(self.images[self.actuel])
-        self.ecran.blit(self.images[self.actuel][int(self.current_image)], self.rect)
-        self.current_image += self.tick / 200
+    def display(self, camera_offset):
+        self.current_image = self.current_image % len(self.images[self.actuel])
 
+        pixel_x = self.rect.x + camera_offset[0]
+        pixel_y = self.rect.y + camera_offset[1]
+
+        self.ecran.blit(self.images[self.actuel][int(self.current_image)], (pixel_x, pixel_y))
+        self.current_image += 1
+ 
     def idle(self):
         self.actuel = "idle"
 
-    def move_right(self):
+    def move_right(self, container):
+        """
+        container est une liste [x, y] qui contient la largeuyr et la hauteur de la map dans laquelle est le joueur (pour pas qu'il sorte)
+        """
         self.actuel = "marche_droite"
         self.rect.x += self.velocity_x
+        # marge de 64 sur lequel le joueur ne peut pas aller a droite
+        if self.rect.x > container[0] - 64 :
+            self.rect.x = container[0] - 64 
         
-    def move_left(self):
+    def move_left(self, container):
+        """
+        container est une liste [x, y] qui contient la largeuyr et la hauteur de la map dans laquelle est le joueur (pour pas qu'il sorte)
+        """
         self.actuel = "marche_gauche"
         self.rect.x -= self.velocity_x
+        if self.rect.x < 64:
+            self.rect.x = 64
+
+    def jump(self):
+            if self.vitesse_y == 0:
+                self.vitesse_y = -10
 
     def update(self):
-        
         self.rect.y += self.vitesse_y
-        self.vitesse_y += 0.5
+        self.vitesse_y += 0.7
 
         if self.rect.y >= 666:
             self.vitesse_y = 0
 
-        print(self.rect.x, self.rect.y)
+        #print(self.rect.x, self.rect.y)
 
-    def jump(self):
-        if self.vitesse_y == 0:
-            self.vitesse_y = -10
+    
+#helloo 
